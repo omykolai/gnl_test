@@ -1,3 +1,9 @@
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+NORMAL='\033[0m'
+
+
 make_gnl()
 {
 	make -C libft > log
@@ -9,22 +15,21 @@ make_gnl()
 }
 do_test()
 {
-	chmod 666 temp.txt
 	DIFF=$(diff res$2.txt temp.txt)
 
 	test -f has_leaks
 	if  [ -f has_leaks ]
 	then
-	    echo "$1: leaks found"
+	    echo "${RED}$1: leaks found${NORMAL}"
 	fi
 	if [ "$DIFF" != "" ]
 	then
-		echo "$1: wrong result"
+		echo "${RED}$1: wrong result${NORMAL}"
 	elif [ -f has_leaks ]
 	then
 		rm has_leaks
 	else
-		echo "$1: OK :D"
+		echo "${GREEN}$1: OK :D${NORMAL}"
 	fi
 
 	rm temp.txt
@@ -37,8 +42,9 @@ timeout()
 
     if [ $? = 1 ]
     then
-        echo "Timeout after ${time} seconds"
+        echo "${YELLOW}>>Test for big file (BUFF_SIZE=4096): Timeout after ${time} seconds"
     else
+    	chmod 666 temp.txt
     	do_test ">>Test for big file (BUFF_SIZE=4096)" 2
     fi
 }
@@ -50,7 +56,8 @@ do
 	./change_buff "$i"
 	make_gnl
 	./test_gnl 1
-	
+	chmod 666 temp.txt
+
 	do_test ">>Test for multiple fd (BUFF_SIZE=$i)" 1
 done
 
