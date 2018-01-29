@@ -34,11 +34,11 @@ do_test()
 
 	rm temp.txt
 }
-timeout() 
+timeout()
 {
     time=$1
     command="$2"
-    expect -c "set echo \"-noecho\"; set timeout $time; spawn -noecho $command; expect timeout { exit 1 } eof { exit 0 }"    
+    expect -c "set echo \"-noecho\"; set timeout $time; spawn -noecho $command; expect timeout { exit 1 } eof { exit 0 }"
 
     if [ $? = 1 ]
     then
@@ -48,6 +48,18 @@ timeout()
     	do_test ">>Test for big file (BUFF_SIZE=4096)" 2
     fi
 }
+
+mv main.c main
+mv change_buff.c change_buff
+
+NORM=$(norminette | grep -e Error)
+if [ "$NORM" != "" ]
+then
+	echo "${RED}NORM ERROR"
+fi
+
+mv main main.c
+mv change_buff change_buff.c
 
 gcc -o change_buff change_buff.c
 max=100000000
